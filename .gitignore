@@ -1,8 +1,4 @@
 .DS_Store
 
-# Binaries for programs and plugins
-tech-curriculum-bgp
-migration
-
 # Dependency directories (remove the comment below to include it)
 vendor/
