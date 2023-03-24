@@ -2,13 +2,11 @@ package usercontroller
 
 import (
 	"context"
-	"crypto/md5"
-	"fmt"
-	"io"
 	"net/mail"
 
 	usermodel "github.com/kevinsudut/tech-curriculum-workshops/app/model/user"
 	"github.com/kevinsudut/tech-curriculum-workshops/lib/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (r RegisterRequest) Validate(ctx context.Context, userRepository UserRepositoryItf) error {
@@ -50,10 +48,17 @@ func (r LoginRequest) Validate(ctx context.Context, userRepository UserRepositor
 		return result, errors.AddTrace(errors.EmailDoesNotExists)
 	}
 
-	passwordHash := md5.New()
-	io.WriteString(passwordHash, r.Password)
+	// VULNERABILITY: do not use MD5
+	// passwordHash := md5.New()
+	// io.WriteString(passwordHash, r.Password)
 
-	if result.Password != fmt.Sprintf("%x", passwordHash.Sum(nil)) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return result, errors.AddTrace(err)
+	}
+
+	// if result.Password != fmt.Sprintf("%x", passwordHash.Sum(nil)) {
+	if err := bcrypt.CompareHashAndPassword(bytes, []byte(result.Password)); err != nil {
 		return result, errors.AddTrace(errors.InvalidUserPassword)
 	}
 

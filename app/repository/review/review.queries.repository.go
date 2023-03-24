@@ -1,5 +1,8 @@
 package reviewrepository
 
+/* VULNERABILITY:
+1. using %s instead of parameterized queries
+*/
 const (
 	queryInsertReview = `
 		INSERT INTO reviews (
@@ -9,11 +12,11 @@ const (
 			"content",
 			status
 		) VALUES (
-			'%d',
-			'%d',
-			'%d',
-			'%s',
-			'%d'
+			$1,
+			$2,
+			$3,
+			$4,
+			$5
 		)
 		RETURNING id;
 	`
@@ -21,9 +24,9 @@ const (
 	queryUpdateReviewStatus = `
 		UPDATE reviews
 		SET
-			status = '%d'
+			status = $1
 		WHERE
-			id = '%d';
+			id = $2;
 	`
 
 	queryGetReviewByID = `
@@ -38,7 +41,7 @@ const (
 		FROM
 			reviews
 		WHERE
-			id = '%d'
+			id = $1
 	`
 
 	queryGetReviewByBookAndStatus = `
@@ -53,9 +56,9 @@ const (
 		FROM
 			reviews
 		WHERE
-			book_id = '%d'
+			book_id = $1
 		AND
-			status = '%d'
+			status = $2
 		ORDER BY id;
 	`
 )

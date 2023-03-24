@@ -1,5 +1,9 @@
 package userrespository
 
+/* VULNERABILITY:
+1. using %s instead of parameterized queries
+2. using MD5 for password. Should use SHA256 or maybe bcrypt hash from golang
+*/
 const (
 	queryInsertUser = `
 		INSERT INTO users (
@@ -9,10 +13,10 @@ const (
 			role
 		)
 		VALUES (
-			'%s',
-			'%s',
-			MD5('%s'),
-			'%s'
+			$1,
+			$2,
+			$3,
+			$4
 		)
 		RETURNING id;
 	`
@@ -27,7 +31,7 @@ const (
 		FROM
 			users
 		WHERE
-			id = '%d';
+			id = $1;
 	`
 
 	queryGetUserByEmail = `
@@ -40,6 +44,6 @@ const (
 		FROM
 			users
 		WHERE
-			email = '%s';
+			email = $2;
 	`
 )
