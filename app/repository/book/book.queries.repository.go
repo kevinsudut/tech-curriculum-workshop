@@ -1,5 +1,8 @@
 package bookrepository
 
+/* VULNERABILITY:
+1. using %s instead of parameterized queries
+*/
 const (
 	queryGetAllBook = `
 		SELECT
@@ -31,7 +34,7 @@ const (
 		FROM
 			books
 		WHERE
-			id = '%d';
+			id = $1;
 	`
 
 	queryGetBookByTitle = `
@@ -48,6 +51,6 @@ const (
 		FROM
 			books
 		WHERE
-			title ILIKE '%%%s%%';
+			title ILIKE '%' || $1 || '%';
 	`
 )

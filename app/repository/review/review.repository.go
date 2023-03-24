@@ -2,14 +2,13 @@ package reviewrepository
 
 import (
 	"context"
-	"fmt"
 
 	reviewmodel "github.com/kevinsudut/tech-curriculum-workshops/app/model/review"
 	"github.com/kevinsudut/tech-curriculum-workshops/lib/errors"
 )
 
 func (repo *ReviewRepository) InsertReview(ctx context.Context, review reviewmodel.Review) (result reviewmodel.Review, err error) {
-	err = repo.db.QueryRowContext(ctx, fmt.Sprintf(queryInsertReview, review.UserID, review.BookID, review.Rate, review.Content, review.Status)).Scan(&review.ID)
+	err = repo.db.QueryRowContext(ctx, queryInsertReview, review.UserID, review.BookID, review.Rate, review.Content, review.Status).Scan(&review.ID)
 	if err != nil {
 		return result, errors.AddTrace(err)
 	}
@@ -18,7 +17,7 @@ func (repo *ReviewRepository) InsertReview(ctx context.Context, review reviewmod
 }
 
 func (repo *ReviewRepository) UpdateReviewStatus(ctx context.Context, reviewID int64, status int) (err error) {
-	result, err := repo.db.ExecContext(ctx, fmt.Sprintf(queryUpdateReviewStatus, status, reviewID))
+	result, err := repo.db.ExecContext(ctx, queryUpdateReviewStatus, status, reviewID)
 	if err != nil {
 		return errors.AddTrace(err)
 	}
@@ -36,7 +35,7 @@ func (repo *ReviewRepository) UpdateReviewStatus(ctx context.Context, reviewID i
 }
 
 func (repo *ReviewRepository) GetReviewByID(ctx context.Context, id int64) (result reviewmodel.Review, err error) {
-	err = repo.db.GetContext(ctx, &result, fmt.Sprintf(queryGetReviewByID, id))
+	err = repo.db.GetContext(ctx, &result, queryGetReviewByID, id)
 	if err != nil {
 		return result, errors.AddTrace(err)
 	}
@@ -45,7 +44,7 @@ func (repo *ReviewRepository) GetReviewByID(ctx context.Context, id int64) (resu
 }
 
 func (repo *ReviewRepository) GetActiveReviewByBook(ctx context.Context, bookID int64) (result []reviewmodel.Review, err error) {
-	err = repo.db.SelectContext(ctx, &result, fmt.Sprintf(queryGetReviewByBookAndStatus, bookID, reviewmodel.StatusActive))
+	err = repo.db.SelectContext(ctx, &result, queryGetReviewByBookAndStatus, bookID, reviewmodel.StatusActive)
 	if err != nil {
 		return result, errors.AddTrace(err)
 	}
